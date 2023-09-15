@@ -4,26 +4,36 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from todo.models.category import CategoryEntity
-from todo.models.task import TaskEntity
-from todo.serializers.task import TaskSerializer
+from todo.models.tag import TaskEntity
+from todo.serializers.tag import TaskSerializer
 
 class TaskDetailView(APIView):
     """
     Retrieve, update or delete a category instance.
     """
-    def get_task(self, pk):
+    def get_object(self, pk, entity):
         try:
-            return TaskEntity.objects.get(pk=pk)
-        except TaskEntity.DoesNotExist:
+            return entity.objects.get(pk=pk)
+        except entity.DoesNotExist:
             raise Http404
 
     def get(self, request, pk, format=None):
-        task = self.get_task(pk)
+        task = self.get_object(pk, TaskEntity)
         serializer = TaskSerializer(task)
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
-        pass
+        task = self.get_object(pk, TaskEntity)
+        category = self.get_object(
+            request.data.get("category"), 
+            CategoryEntity)
+        serializer = TaskSerializer(task, data=request.data)
+        if (serializer.is_valid()):
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
-        pass
+        task = self.get_task(pk, TaskEntity)
+        task.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    

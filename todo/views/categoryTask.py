@@ -3,8 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from todo.models.task import TaskEntity
-from todo.serializers.task import TaskSerializer
+from todo.models.tag import TaskEntity
+from todo.serializers.tag import TaskSerializer
 
 
 class CategoryTaskView(APIView):
